@@ -1,0 +1,22 @@
+# Beispiel für den Eintrag dieses Plugins in der Hub-Konfiguration (MCP_HUB_CONFIG_PATH, Vorgabe ./config.yaml).
+# Ein Eintrag ist nur nötig für mehrere Konten, Geheimnisse oder `enabled: false`; das installierte Paket lädt sonst
+# von selbst über den Entry-Point und liest ein einzelnes Konto aus FYOS_KALENDER_URL, FYOS_KALENDER_NUTZER und
+# FYOS_KALENDER_PASSWORT.
+plugins:
+  - name: kalender
+    config:
+      # Weitere Konten. Passwörter stehen nie hier: passwort_env nennt die Umgebungsvariable, die das App-Passwort enthält.
+      # art: caldav (Vorgabe) oder ics (Abonnement, schreibgeschützt; für Google die geheime Adresse im iCal-Format).
+      konten:
+        - name: Privat
+          url: https://cloud.example.com/remote.php/dav
+          nutzer: alex
+          passwort_env: FYOS_KALENDER_PRIVAT_PW
+        - name: Feiertage
+          art: ics
+          url: webcal://calendars.example.org/feiertage.ics
+    # Der Hub löst Geheimnisse aus der Umgebung oder aus /run/secrets/<name> auf und legt sie als Umgebungsvariable an,
+    # wo das Plugin sie liest.
+    secrets:
+      - { name: kalender-privat-pw, env: FYOS_KALENDER_PRIVAT_PW }
+    # enabled: false           # schaltet das Plugin ab, auch wenn es installiert ist

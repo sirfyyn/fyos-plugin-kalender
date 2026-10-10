@@ -1,0 +1,42 @@
+[build-system]
+# 77: erste Fassung mit Lizenz als SPDX-Ausdruck (PEP 639); die Tabellenform `license = { text = ... }` ist veraltet.
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fyos-plugin-kalender"
+version = "0.1.0"
+description = "FYOS-Hub-Plugin Kalender: Termine aus CalDAV-Konten und ICS-Abonnements, Termine anlegen; Quelle für Leitstand und Agent"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "sirfyyn and FYOS CONTRIBUTORS" }]  # sauber: ok
+dependencies = [
+    "fyos-hub>=0.1.1.dev0",
+    # Wiederholungsregeln (RRULE) und eingebettete Zeitzonen (VTIMEZONE). Doppelt lizenziert: Apache-2.0 und BSD-3-Clause.
+    "python-dateutil>=2.8.2",
+    # Zeitzonen-Datenbank für zoneinfo, falls das System keine hat (schlanke Container, Windows).
+    "tzdata",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+# Der Hub lädt das Plugin von selbst, sobald das Paket installiert ist (Gruppe `mcp_hub.plugins`).
+# Der Name ist der `name` der Klasse, damit die Werkzeug-IDs (kalender.konten, kalender.termine, kalender.anlegen) gleich bleiben.
+[project.entry-points."mcp_hub.plugins"]
+kalender = "fyos_plugin_kalender.plugin:KalenderPlugin"
+
+# Das Hub-Plugin `skills` liest die Skills aus dem Unterordner `skills/` dieses Pakets (Gruppe `fyos.skills`).
+[project.entry-points."fyos.skills"]
+kalender = "fyos_plugin_kalender"
+
+[tool.setuptools]
+packages = ["fyos_plugin_kalender"]
+
+[tool.setuptools.package-data]
+fyos_plugin_kalender = ["skills/*/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
